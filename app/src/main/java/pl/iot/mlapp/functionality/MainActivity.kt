@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupKoin() {
         startKoin {
-            androidLogger()
+            //androidLogger()
             androidContext(this@MainActivity)
             modules(appModule)
         }
@@ -54,6 +54,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> false
             }
+        }
+        supportFragmentManager.commit {
+            replace<CameraFragment>(R.id.fragmentContainer)
         }
     }
 }
