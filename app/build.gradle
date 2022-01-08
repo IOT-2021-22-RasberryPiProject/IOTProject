@@ -38,7 +38,6 @@ dependencies {
     def koin_version= "3.1.5"
     def room_version= "2.4.0"
     def retrofit_version= "2.9.0"
-    def coroutines_version= "2.9.0"
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.0'
@@ -55,8 +54,6 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
