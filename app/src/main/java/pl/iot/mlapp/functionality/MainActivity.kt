@@ -7,6 +7,7 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -36,12 +37,22 @@ class MainActivity : AppCompatActivity() {
         setupViews()
 
         mqttTest()
+        mqttHandleError()
     }
 
     private fun mqttTest() {
         lifecycleScope.launch(Dispatchers.IO) {
             mqtt.mlMessageFlow.collect {
                 Log.d("mlMessageFlow", it)
+            }
+        }
+    }
+
+    private fun mqttHandleError() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            mqtt.connectionErrorFlow.collect {
+                Snackbar.make(binding.root, it.message, Snackbar.LENGTH_INDEFINITE)
+                    .show()
             }
         }
     }
