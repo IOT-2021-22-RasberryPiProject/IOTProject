@@ -9,22 +9,22 @@ import androidx.fragment.app.replace
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.scope.scope
 import org.koin.core.context.GlobalContext.startKoin
 import pl.iot.mlapp.R
 import pl.iot.mlapp.databinding.ActivityMainBinding
 import pl.iot.mlapp.di.appModule
 import pl.iot.mlapp.functionality.camera.CameraFragment
 import pl.iot.mlapp.functionality.notifications.NotificationsFragment
-import pl.iot.mlapp.mqtt.MqttConfig
 import pl.iot.mlapp.mqtt.MqttManager
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    val mqtt: MqttManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -39,21 +39,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun mqttTest() {
-        val mqtt = MqttManager(applicationContext, mqttTestGetConfig())
-
         lifecycleScope.launch(Dispatchers.IO) {
             mqtt.mlMessageFlow.collect {
                 Log.d("mlMessageFlow", it)
             }
         }
     }
-
-    private fun mqttTestGetConfig() = MqttConfig(
-        brokerIp = "192.168.2.229:1883",
-        mlTopic = "ml",
-        cameraTopic = "camera",
-        clientId = "androidClient"
-    )
 
     private fun setupKoin() {
         startKoin {
