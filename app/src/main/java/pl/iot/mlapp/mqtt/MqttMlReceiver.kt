@@ -10,25 +10,25 @@ import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
-class MqttManager(
+class MqttMlReceiver(
     context: Context,
     private val config: MqttConfig
 ) {
     private val client = MqttAndroidClient(
         context,
-        config.getTcpBroker(),
+        config.getTcpMlBroker(),
         config.clientId,
         MemoryPersistence(),
         MqttAndroidClient.Ack.AUTO_ACK
     )
 
-    private val _mlMessageFlow = MutableSharedFlow<String>()
-    private val _cameraDataFlow = MutableSharedFlow<ByteArray>()
-    private val _connectionError = MutableSharedFlow<ErrorType>()
+    private val _messageFlow = MutableSharedFlow<String>()
+    private val _connectionError = MutableSharedFlow<MqttErrorType>()
 
-    val mlMessageFlow: Flow<String> = _mlMessageFlow
-    val cameraDataFlow: Flow<ByteArray> = _cameraDataFlow
-    val connectionErrorFlow: Flow<ErrorType> = _connectionError
+    val messageFlow: Flow<String> = _messageFlow
+    val connectionErrorFlow: Flow<MqttErrorType> = _connectionError
+
+    private val TAG = "MqttML"
 
     init {
         val connOptions = MqttConnectOptions()
@@ -41,7 +41,12 @@ class MqttManager(
             }
 
             override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                runBlocking { _connectionError.emit(ErrorType.OnConnect(exception?.stackTraceToString().toString())) }
+                runBlocking {
+                    _connectionError.emit(
+                        MlError.OnConnect(exception?.stackTraceToString().toString())
+                    )
+                }
+                Log.d(TAG, "connection not established")
                 exception?.printStackTrace()
             }
         })
@@ -49,23 +54,19 @@ class MqttManager(
 
     private fun subscribe() {
         client.subscribe(config.mlTopic, 0)
-        client.subscribe(config.cameraTopic, 0)
 
         client.setCallback(object : MqttCallback {
             @Throws(Exception::class)
             override fun messageArrived(topic: String, message: MqttMessage) {
                 runBlocking(Dispatchers.IO) {
-                    Log.d("MQTT received: ", "topic: $topic")
-                    if (topic == config.mlTopic)
-                        _mlMessageFlow.emit(message.payload.decodeToString())
-                    else if (topic == config.cameraTopic)
-                        _cameraDataFlow.emit(message.payload)
+                    Log.d(TAG, "received $topic")
+                    _messageFlow.emit(message.payload.decodeToString())
                 }
             }
 
             override fun connectionLost(cause: Throwable) {
-                Log.d("MQTT connectionLost: ", cause.message.toString())
-                runBlocking { _connectionError.emit(ErrorType.LostConnection(cause.message.toString())) }
+                Log.d(TAG, "connection lost: ${cause.message.toString()}")
+                runBlocking { _connectionError.emit(MlError.LostConnection(cause.message.toString())) }
             }
 
             override fun deliveryComplete(token: IMqttDeliveryToken) {} //Nie dotyczy - nie wysyłamy nic
@@ -73,11 +74,9 @@ class MqttManager(
     }
 
     companion object {
-        sealed class ErrorType {
-            abstract val message: String
-
-            class OnConnect(override val message: String) : ErrorType()
-            class LostConnection(override val message: String) : ErrorType()
+        sealed class MlError : MqttErrorType() {
+            class OnConnect(override val message: String) : MlError()
+            class LostConnection(override val message: String) : MlError()
         }
     }
 }

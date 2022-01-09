@@ -11,6 +11,13 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <string name="error_onconnection_ml">Bład połączenia - ML</string>
+    <string name="error_onconnection_camera">Bład połączenia - Kamera</string>
+
+    <string name="ok">OK</string>
+    <string name="error_lostconnection_error_ml">Utracono połączenie - ML</string>
+    <string name="error_lostconnection_camera">Utracono połączenie - Kamera</string>
+
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus

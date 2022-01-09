@@ -1,31 +1,26 @@
 package pl.iot.mlapp.functionality
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.context.GlobalContext.startKoin
 import pl.iot.mlapp.R
 import pl.iot.mlapp.databinding.ActivityMainBinding
 import pl.iot.mlapp.di.appModule
 import pl.iot.mlapp.functionality.camera.CameraFragment
 import pl.iot.mlapp.functionality.notifications.NotificationsFragment
-import pl.iot.mlapp.mqtt.MqttManager
+import pl.iot.mlapp.mqtt.MqttCameraReceiver
+import pl.iot.mlapp.mqtt.MqttMlReceiver
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
-    val mqtt: MqttManager by inject()
+    private val viewModel by viewModel<MainActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -36,25 +31,32 @@ class MainActivity : AppCompatActivity() {
         setupKoin()
         setupViews()
 
-        mqttTest()
-        mqttHandleError()
+        observeForErrors()
     }
 
-    private fun mqttTest() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            mqtt.mlMessageFlow.collect {
-                Log.d("mlMessageFlow", it)
+    private fun observeForErrors() {
+        viewModel.errorLiveData.observe(this) { error ->
+            when (error) {
+                is MqttCameraReceiver.Companion.CameraError.OnConnect -> showErrorSnackbar(
+                    getString(R.string.error_onconnection_camera)
+                )
+                is MqttCameraReceiver.Companion.CameraError.LostConnection -> showErrorSnackbar(
+                    getString(R.string.error_lostconnection_camera)
+                )
+                is MqttMlReceiver.Companion.MlError.OnConnect -> showErrorSnackbar(
+                    getString(R.string.error_onconnection_ml)
+                )
+                is MqttMlReceiver.Companion.MlError.LostConnection -> showErrorSnackbar(
+                    getString(R.string.error_lostconnection_error_ml)
+                )
             }
         }
     }
 
-    private fun mqttHandleError() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            mqtt.connectionErrorFlow.collect {
-                Snackbar.make(binding.root, it.message, Snackbar.LENGTH_INDEFINITE)
-                    .show()
-            }
-        }
+    private fun showErrorSnackbar(message: String) {
+        val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_INDEFINITE)
+        snackbar.setAction(getString(R.string.ok)) { snackbar.dismiss() }
+        snackbar.show()
     }
 
     private fun setupKoin() {
