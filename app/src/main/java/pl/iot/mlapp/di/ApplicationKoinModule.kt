@@ -4,6 +4,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import pl.iot.mlapp.functionality.MainActivityViewModel
+import pl.iot.mlapp.functionality.camera.CameraFragmentViewModel
 import pl.iot.mlapp.mqtt.MqttConfig
 import pl.iot.mlapp.mqtt.MqttCameraReceiver
 import pl.iot.mlapp.mqtt.MqttMlReceiver
@@ -22,4 +23,5 @@ val appModule = module {
     single { MqttMlReceiver(androidContext(), get()) }
 
     viewModel { MainActivityViewModel(get(), get()) }
+    viewModel { CameraFragmentViewModel(get(), get()) }
 }
