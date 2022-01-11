@@ -15,7 +15,7 @@ val appModule = module {
             mlBrokerIp = "192.168.2.229:1883",
             mlTopic = "ml",
             cameraBrokerIp = "192.168.2.229:1883",
-            cameraTopic = "camera",
+            cameraTopic = "monitoring/frame",
             clientId = "androidClient"
         )
     }

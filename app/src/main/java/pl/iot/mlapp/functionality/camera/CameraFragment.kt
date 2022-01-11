@@ -20,6 +20,7 @@ class CameraFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewModel
         _binding = FragmentCameraBinding.inflate(inflater, container, false)
         return binding.root
     }

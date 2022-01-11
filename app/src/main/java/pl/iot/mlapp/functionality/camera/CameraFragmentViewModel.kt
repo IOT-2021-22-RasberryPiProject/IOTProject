@@ -2,6 +2,8 @@ package pl.iot.mlapp.functionality.camera
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Base64
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,11 +28,7 @@ class CameraFragmentViewModel(
     private fun observeCamera() {
         viewModelScope.launch(Dispatchers.Default) {
             cameraReceiver.messageFlow
-                .collect { _bitmapLiveData.postValue(it.toBitmap()) }
+                .collect { _bitmapLiveData.postValue(it?.getBitmap()) }
         }
     }
-
-
-    private fun ByteArray.toBitmap() =
-        BitmapFactory.decodeByteArray(this, 0, this.size);
 }

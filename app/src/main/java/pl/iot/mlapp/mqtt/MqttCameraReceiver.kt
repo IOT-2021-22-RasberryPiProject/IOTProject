@@ -2,6 +2,7 @@ package pl.iot.mlapp.mqtt
 
 import android.content.Context
 import android.util.Log
+import com.beust.klaxon.Klaxon
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,10 +23,10 @@ class MqttCameraReceiver(
         MqttAndroidClient.Ack.AUTO_ACK
     )
 
-    private val _messageFlow = MutableSharedFlow<ByteArray>()
+    private val _messageFlow = MutableSharedFlow<MqttCameraResponseModel?>()
     private val _connectionError = MutableSharedFlow<MqttErrorType>()
 
-    val messageFlow: Flow<ByteArray> = _messageFlow
+    val messageFlow: Flow<MqttCameraResponseModel?> = _messageFlow
     val connectionErrorFlow: Flow<MqttErrorType> = _connectionError
 
     private val TAG = "MqttCamera"
@@ -60,7 +61,7 @@ class MqttCameraReceiver(
             override fun messageArrived(topic: String, message: MqttMessage) {
                 runBlocking(Dispatchers.IO) {
                     Log.d(TAG, "received $topic")
-                    _messageFlow.emit(message.payload)
+                    _messageFlow.emit(MqttCameraResponseModel.fromJson(message.payload.decodeToString()))
                 }
             }
 
