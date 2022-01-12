@@ -17,7 +17,6 @@ import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
 class MainActivityViewModel(
     private val cameraReceiver: MqttCameraReceiver,
     private val mlReceiver: MqttMlReceiver,
-    private val mqttHandler: MqttStatusHandler,
 ) : ViewModel() {
 
     init {

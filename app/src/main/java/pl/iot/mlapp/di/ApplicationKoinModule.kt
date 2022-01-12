@@ -31,7 +31,7 @@ val appModule = module {
             configRepository = get()
         )
     }
-    single {
+    single(createdAtStart = true) {
         MqttStatusHandler(
             cameraReceiver = get(),
             mlReceiver = get()
@@ -42,7 +42,6 @@ val appModule = module {
         MainActivityViewModel(
             cameraReceiver = get(),
             mlReceiver = get(),
-            mqttHandler = get()
         )
     }
 
