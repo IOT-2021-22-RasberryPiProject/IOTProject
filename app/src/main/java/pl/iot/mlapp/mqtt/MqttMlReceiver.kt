@@ -14,6 +14,11 @@ class MqttMlReceiver(
     context: Context,
     private val config: MqttConfig
 ) {
+    sealed class MlError : MqttErrorType() {
+        class OnConnect(override val message: String) : MlError()
+        class LostConnection(override val message: String) : MlError()
+    }
+
     private val client = MqttAndroidClient(
         context,
         config.getTcpMlBroker(),
@@ -27,8 +32,6 @@ class MqttMlReceiver(
 
     val messageFlow: Flow<String> = _messageFlow
     val connectionErrorFlow: Flow<MqttErrorType> = _connectionError
-
-    private val TAG = "MqttML"
 
     init {
         connect()
@@ -86,9 +89,6 @@ class MqttMlReceiver(
     }
 
     companion object {
-        sealed class MlError : MqttErrorType() {
-            class OnConnect(override val message: String) : MlError()
-            class LostConnection(override val message: String) : MlError()
-        }
+        private const val TAG = "MqttML"
     }
 }

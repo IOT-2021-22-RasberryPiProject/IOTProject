@@ -18,6 +18,10 @@
     <string name="error_lostconnection_error_ml">Utracono połączenie - ML</string>
     <string name="error_lostconnection_camera">Utracono połączenie - Kamera</string>
 
+    <string name="notification_foreground_channel_name">Powiadomienie o działaniu w tle</string>
+    <string name="notification_alert_channel_name">Powiadomienie o nowych zdarzeniach</string>
+    <string name="notification_title">Nowe zdarzenie</string>
+
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus

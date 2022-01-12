@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setupKoin()
         setupViews()
 
         observeForErrors()
@@ -37,16 +36,16 @@ class MainActivity : AppCompatActivity() {
     private fun observeForErrors() {
         viewModel.errorLiveData.observe(this) { error ->
             when (error) {
-                is MqttCameraReceiver.Companion.CameraError.OnConnect -> showErrorSnackbar(
+                is MqttCameraReceiver.CameraError.OnConnect -> showErrorSnackbar(
                     getString(R.string.error_onconnection_camera)
                 )
-                is MqttCameraReceiver.Companion.CameraError.LostConnection -> showErrorSnackbar(
+                is MqttCameraReceiver.CameraError.LostConnection -> showErrorSnackbar(
                     getString(R.string.error_lostconnection_camera)
                 )
-                is MqttMlReceiver.Companion.MlError.OnConnect -> showErrorSnackbar(
+                is MqttMlReceiver.MlError.OnConnect -> showErrorSnackbar(
                     getString(R.string.error_onconnection_ml)
                 )
-                is MqttMlReceiver.Companion.MlError.LostConnection -> showErrorSnackbar(
+                is MqttMlReceiver.MlError.LostConnection -> showErrorSnackbar(
                     getString(R.string.error_lostconnection_error_ml)
                 )
             }
@@ -57,14 +56,6 @@ class MainActivity : AppCompatActivity() {
         val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_INDEFINITE)
         snackbar.setAction(getString(R.string.ok)) { snackbar.dismiss() }
         snackbar.show()
-    }
-
-    private fun setupKoin() {
-        startKoin {
-            //androidLogger()
-            androidContext(this@MainActivity)
-            modules(appModule)
-        }
     }
 
     private fun setupViews() {
