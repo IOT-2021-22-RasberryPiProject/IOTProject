@@ -1,4 +1,4 @@
-package pl.iot.mlapp.mqtt
+package pl.iot.mlapp.mqtt.receivers
 
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
@@ -8,18 +8,21 @@ import kotlinx.coroutines.runBlocking
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
+import pl.iot.mlapp.functionality.config.IConfigRepository
 import pl.iot.mlapp.functionality.config.MqttConfig
+import pl.iot.mlapp.mqtt.model.MqttErrorType
 
-class MqttCameraReceiver(
+class MqttMlReceiver(
     private val context: Context,
-    private val config: MqttConfig
+    private val configRepository: IConfigRepository
 ) {
-    private val _messageFlow = MutableSharedFlow<MqttCameraResponseModel?>()
+    private val _messageFlow = MutableSharedFlow<String>()
     private val _connectionError = MutableSharedFlow<MqttErrorType>()
 
-    val messageFlow: Flow<MqttCameraResponseModel?> = _messageFlow
+    val messageFlow: Flow<String> = _messageFlow
     val connectionErrorFlow: Flow<MqttErrorType> = _connectionError
 
+    private var config: MqttConfig = configRepository.getConfig()
     private var client: MqttAndroidClient = initClient()
 
     private fun initClient() = MqttAndroidClient(
@@ -35,26 +38,24 @@ class MqttCameraReceiver(
     }
 
     fun reconnect() {
+        config = configRepository.getConfig()
         client.unregisterResources()
         client = initClient()
         connect()
     }
 
     private fun connect() {
-        val connOptions = MqttConnectOptions().apply {
-            isAutomaticReconnect = true
-            isCleanSession = true
-        }
+        val connOptions = MqttConnectOptions()
 
         client.connect(connOptions, object : IMqttActionListener {
-            override fun onSuccess(asyncActionToken: IMqttToken?) = subscribeToTopic()
+            override fun onSuccess(asyncActionToken: IMqttToken?) {
+                subscribe(client)
+            }
 
             override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                runBlocking(Dispatchers.IO) {
+                runBlocking {
                     _connectionError.emit(
-                        MqttErrorType.CameraError.OnConnect(
-                            exception?.stackTraceToString().toString()
-                        )
+                        MqttErrorType.MlError.OnConnect(exception?.stackTraceToString().toString())
                     )
                 }
                 exception?.printStackTrace()
@@ -62,23 +63,22 @@ class MqttCameraReceiver(
         })
     }
 
-    private fun subscribeToTopic() {
-        client.subscribe(config.cameraTopic, 0)
+    private fun subscribe(client: MqttAndroidClient) {
+        client.subscribe(config.mlTopic, 0)
 
         client.setCallback(object : MqttCallback {
             @Throws(Exception::class)
             override fun messageArrived(topic: String, message: MqttMessage) {
                 runBlocking(Dispatchers.IO) {
-                    _messageFlow.emit(MqttCameraResponseModel.fromJson(message.payload.decodeToString()))
+                    _messageFlow.emit(message.payload.decodeToString())
                 }
             }
 
             override fun connectionLost(cause: Throwable) {
-                runBlocking { _connectionError.emit(MqttErrorType.CameraError.LostConnection(cause.message.toString())) }
+                runBlocking { _connectionError.emit(MqttErrorType.MlError.LostConnection(cause.message.toString())) }
             }
 
-            override fun deliveryComplete(token: IMqttDeliveryToken) =
-                Unit //Nie dotyczy - nie wysyłamy nic
+            override fun deliveryComplete(token: IMqttDeliveryToken) = Unit //Nie dotyczy - nie wysyłamy nic
         })
     }
 }

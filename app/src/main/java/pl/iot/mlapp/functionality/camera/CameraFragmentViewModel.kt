@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import pl.iot.mlapp.mqtt.MqttCameraReceiver
+import pl.iot.mlapp.mqtt.receivers.MqttCameraReceiver
 
 class CameraFragmentViewModel(
     private val cameraReceiver: MqttCameraReceiver,

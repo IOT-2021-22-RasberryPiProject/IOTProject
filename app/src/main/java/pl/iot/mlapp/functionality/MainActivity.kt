@@ -12,7 +12,7 @@ import pl.iot.mlapp.databinding.ActivityMainBinding
 import pl.iot.mlapp.functionality.camera.CameraFragment
 import pl.iot.mlapp.functionality.notifications.NotificationsFragment
 import pl.iot.mlapp.functionality.settings.SettingsFragment
-import pl.iot.mlapp.mqtt.MqttErrorType
+import pl.iot.mlapp.mqtt.model.MqttErrorType
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel by viewModel<MainActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        //WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)

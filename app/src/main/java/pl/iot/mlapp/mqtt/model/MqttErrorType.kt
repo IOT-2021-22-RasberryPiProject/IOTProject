@@ -1,4 +1,4 @@
-package pl.iot.mlapp.mqtt
+package pl.iot.mlapp.mqtt.model
 
 sealed class MqttErrorType {
     abstract val message: String

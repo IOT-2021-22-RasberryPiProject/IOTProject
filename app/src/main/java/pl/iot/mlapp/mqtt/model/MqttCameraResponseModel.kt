@@ -1,4 +1,4 @@
-package pl.iot.mlapp.mqtt
+package pl.iot.mlapp.mqtt.model
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

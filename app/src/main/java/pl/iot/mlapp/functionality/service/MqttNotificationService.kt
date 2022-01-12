@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.collect
 import org.koin.android.ext.android.inject
 import pl.iot.mlapp.R
 import pl.iot.mlapp.functionality.MainActivity
-import pl.iot.mlapp.mqtt.MqttMlReceiver
+import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
 
 class MqttNotificationService : LifecycleService() {
     private val mqttMessageReceiver: MqttMlReceiver by inject()

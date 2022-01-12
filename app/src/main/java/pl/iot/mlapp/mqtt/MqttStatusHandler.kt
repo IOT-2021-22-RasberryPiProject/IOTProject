@@ -3,6 +3,9 @@ package pl.iot.mlapp.mqtt
 import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import pl.iot.mlapp.mqtt.model.MqttErrorType
+import pl.iot.mlapp.mqtt.receivers.MqttCameraReceiver
+import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
 
 class MqttStatusHandler(
     private val cameraReceiver: MqttCameraReceiver,
@@ -26,7 +29,7 @@ class MqttStatusHandler(
             .collect {
                 printLog(it)
                 cameraReceiver.reconnect()
-                delay(RETRY_TIME)
+                delay(RETRY_TIME_MILLIS)
             }
     }
 
@@ -35,7 +38,7 @@ class MqttStatusHandler(
             .collect {
                 printLog(it)
                 mlReceiver.reconnect()
-                delay(RETRY_TIME)
+                delay(RETRY_TIME_MILLIS)
             }
     }
 
@@ -52,16 +55,13 @@ class MqttStatusHandler(
     private fun printLog(error: MqttErrorType) =
         when (error) {
             is MqttErrorType.MlError.OnConnect -> Log.d(ML_TAG, "connection not established")
-            is MqttErrorType.CameraError.OnConnect -> Log.d(
-                CAMERA_TAG,
-                "connection not established"
-            )
+            is MqttErrorType.CameraError.OnConnect -> Log.d(CAMERA_TAG, "connection not established")
             is MqttErrorType.MlError.LostConnection -> Log.d(ML_TAG, "connection lost")
             is MqttErrorType.CameraError.LostConnection -> Log.d(CAMERA_TAG, "connection lost")
         }
 
     companion object {
-        private const val RETRY_TIME = 3000L //millis
+        private const val RETRY_TIME_MILLIS = 10000L
         private const val CAMERA_TAG = "MqttCamera"
         private const val ML_TAG = "MqttMl"
     }
