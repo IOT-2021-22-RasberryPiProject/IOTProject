@@ -6,18 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.google.android.material.snackbar.Snackbar
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.iot.mlapp.R
 import pl.iot.mlapp.databinding.ActivityMainBinding
-import pl.iot.mlapp.extensions.showSnackbar
 import pl.iot.mlapp.functionality.camera.CameraFragment
 import pl.iot.mlapp.functionality.notifications.NotificationsFragment
 import pl.iot.mlapp.functionality.settings.SettingsFragment
 import pl.iot.mlapp.mqtt.model.MqttErrorType
 import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
-import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
-import java.time.Duration
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,14 +34,17 @@ class MainActivity : AppCompatActivity() {
     fun showSnackbar(
         message: String,
         duration: Int = Snackbar.LENGTH_SHORT,
-        actionTextColor: Int? = null,
+        textColor: Int? = null,
         backgroundColor: Int? = null
     ) = with(binding) {
         val snackbar = Snackbar.make(bottomNavigation, message, duration)
         snackbar.anchorView = bottomNavigation
         snackbar.setAction(getString(R.string.ok)) { snackbar.dismiss() }
-        actionTextColor?.let { snackbar.setActionTextColor(it) }
         backgroundColor?.let { snackbar.setBackgroundTint(it) }
+        textColor?.let {
+            snackbar.setTextColor(it)
+            snackbar.setActionTextColor(it)
+        }
         snackbar.show()
     }
 
@@ -66,10 +65,10 @@ class MainActivity : AppCompatActivity() {
             else -> null
         }
 
-        binding.bottomNavigation.showSnackbar(
+        showSnackbar(
             message = mlMessage.message,
             backgroundColor = backgroundColor,
-            actionTextColor = Color.WHITE
+            textColor = Color.WHITE
         )
     }
 
