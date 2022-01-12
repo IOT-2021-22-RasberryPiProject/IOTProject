@@ -5,11 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.iot.mlapp.R
 import pl.iot.mlapp.databinding.FragmentSettingsBinding
+import pl.iot.mlapp.extensions.showSnackbar
 import pl.iot.mlapp.functionality.config.MqttConfig
-import pl.iot.mlapp.functionality.showSnackbar
 
 class SettingsFragment : Fragment() {
 
@@ -51,7 +52,10 @@ class SettingsFragment : Fragment() {
             )
         )
 
-        binding.root.showSnackbar(getString(R.string.setting_save_success))
+        root.showSnackbar(
+            message = getString(R.string.setting_save_success),
+            duration = Snackbar.LENGTH_SHORT
+        )
     }
 
     private fun setupObservers() {

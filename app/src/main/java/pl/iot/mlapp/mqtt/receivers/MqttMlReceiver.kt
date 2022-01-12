@@ -10,76 +10,27 @@ import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import pl.iot.mlapp.functionality.config.IConfigRepository
 import pl.iot.mlapp.functionality.config.MqttConfig
+import pl.iot.mlapp.mqtt.MqttMessageReceiverCallback
+import pl.iot.mlapp.mqtt.MqttReceiverActionListener
+import pl.iot.mlapp.mqtt.model.MqttCameraResponseModel
 import pl.iot.mlapp.mqtt.model.MqttErrorType
+import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
 
 class MqttMlReceiver(
-    private val context: Context,
-    private val configRepository: IConfigRepository
-) {
-    private val _messageFlow = MutableSharedFlow<String>()
-    private val _connectionError = MutableSharedFlow<MqttErrorType>()
+    context: Context,
+    configRepository: IConfigRepository
+): MqttReceiver<MqttMlResponseModel>(context, configRepository) {
+    override fun getTopic(): String = config.mlTopic
 
-    val messageFlow: Flow<String> = _messageFlow
-    val connectionErrorFlow: Flow<MqttErrorType> = _connectionError
-
-    private var config: MqttConfig = configRepository.getConfig()
-    private var client: MqttAndroidClient = initClient()
-
-    init {
-        connect()
+    override suspend fun onMessageArrived(topic: String, message: String) {
+        _messageFlow.emit(MqttMlResponseModel.fromJson(message))
     }
 
-    fun reconnect() {
-        client.unsubscribe(config.mlTopic)
-        config = configRepository.getConfig()
-        client.unregisterResources()
-        client = initClient()
-        connect()
+    override suspend fun onConnectionLost(throwable: Throwable) {
+        _connectionError.emit(MqttErrorType.MlError.LostConnection(throwable.message.toString()))
     }
 
-    private fun initClient() = MqttAndroidClient(
-        context,
-        config.getTcpBroker(),
-        config.clientId,
-        MemoryPersistence(),
-        MqttAndroidClient.Ack.AUTO_ACK
-    )
-
-    private fun connect() {
-        val connOptions = MqttConnectOptions()
-
-        client.connect(connOptions, object : IMqttActionListener {
-            override fun onSuccess(asyncActionToken: IMqttToken?) {
-                subscribe(client)
-            }
-
-            override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                runBlocking {
-                    _connectionError.emit(
-                        MqttErrorType.MlError.OnConnect(exception?.stackTraceToString().toString())
-                    )
-                }
-                exception?.printStackTrace()
-            }
-        })
-    }
-
-    private fun subscribe(client: MqttAndroidClient) {
-        client.subscribe(config.mlTopic, 0)
-
-        client.setCallback(object : MqttCallback {
-            @Throws(Exception::class)
-            override fun messageArrived(topic: String, message: MqttMessage) {
-                runBlocking(Dispatchers.IO) {
-                    _messageFlow.emit(message.payload.decodeToString())
-                }
-            }
-
-            override fun connectionLost(cause: Throwable) {
-                runBlocking { _connectionError.emit(MqttErrorType.MlError.LostConnection(cause.message.toString())) }
-            }
-
-            override fun deliveryComplete(token: IMqttDeliveryToken) = Unit //Nie dotyczy - nie wysyłamy nic
-        })
+    override suspend fun onConnectionFailure(throwable: Throwable) {
+        _connectionError.emit(MqttErrorType.MlError.OnConnect(throwable.stackTraceToString()))
     }
 }

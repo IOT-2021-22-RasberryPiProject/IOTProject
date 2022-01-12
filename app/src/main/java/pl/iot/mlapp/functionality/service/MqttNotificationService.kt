@@ -87,7 +87,9 @@ class MqttNotificationService : LifecycleService() {
 
     private fun createMqqtMessagesObserver() {
         lifecycleScope.launch(Dispatchers.IO) {
-            mqttMessageReceiver.messageFlow.collect { observeIncomingMessages(it) }
+            mqttMessageReceiver.messageFlow.collect { responseModel ->
+                responseModel?.let { observeIncomingMessages(it.message) }
+            }
         }
     }
 

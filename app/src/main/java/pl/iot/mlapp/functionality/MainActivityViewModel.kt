@@ -26,6 +26,10 @@ class MainActivityViewModel(
     private val _errorLiveData = MutableLiveData<MqttErrorType>()
     val errorLiveData: LiveData<MqttErrorType> = _errorLiveData
 
+    private fun observeForMlMessages() {
+
+    }
+
     private fun mqttObserveForErrors() {
         viewModelScope.launch(Dispatchers.IO) {
             listOf(cameraReceiver.connectionErrorFlow, mlReceiver.connectionErrorFlow)
