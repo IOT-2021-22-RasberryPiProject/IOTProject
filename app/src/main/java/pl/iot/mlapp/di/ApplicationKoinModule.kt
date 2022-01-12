@@ -13,11 +13,12 @@ import pl.iot.mlapp.functionality.config.IConfigRepository
 import pl.iot.mlapp.functionality.config.MqttConfig
 import pl.iot.mlapp.mqtt.MqttCameraReceiver
 import pl.iot.mlapp.mqtt.MqttMlReceiver
+import pl.iot.mlapp.mqtt.MqttStatusHandler
 
 val appModule = module {
     single {
         MqttConfig(
-            brokerIp = "192.168.2.138",
+            brokerIp = "192.168.2.229",
             mlTopic = "ml",
             cameraTopic = "monitoring/frame",
             clientId = "androidClient"
@@ -27,11 +28,13 @@ val appModule = module {
     single { MqttCameraReceiver(androidContext(), get()) }
     single { MqttMlReceiver(androidContext(), get()) }
 
+    single { MqttStatusHandler(get(), get()) }
+
     single { AppLifecycleObserver(androidContext()) }
 
     single<IConfigRepository> { ConfigRepository(androidApplication()) }
 
-    viewModel { MainActivityViewModel(get(), get()) }
-    viewModel { CameraFragmentViewModel(get(), get()) }
+    viewModel { MainActivityViewModel(get(), get(), get()) }
+    viewModel { CameraFragmentViewModel(get()) }
     viewModel { SettingsViewModel(configRepository = get()) }
 }

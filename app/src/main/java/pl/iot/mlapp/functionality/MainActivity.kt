@@ -6,17 +6,13 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.google.android.material.snackbar.Snackbar
-import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.context.GlobalContext.startKoin
 import pl.iot.mlapp.R
 import pl.iot.mlapp.databinding.ActivityMainBinding
-import pl.iot.mlapp.di.appModule
 import pl.iot.mlapp.functionality.camera.CameraFragment
 import pl.iot.mlapp.functionality.notifications.NotificationsFragment
 import pl.iot.mlapp.functionality.settings.SettingsFragment
-import pl.iot.mlapp.mqtt.MqttCameraReceiver
-import pl.iot.mlapp.mqtt.MqttMlReceiver
+import pl.iot.mlapp.mqtt.MqttErrorType
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,16 +33,16 @@ class MainActivity : AppCompatActivity() {
     private fun observeForErrors() {
         viewModel.errorLiveData.observe(this) { error ->
             when (error) {
-                is MqttCameraReceiver.CameraError.OnConnect -> showErrorSnackbar(
+                is MqttErrorType.CameraError.OnConnect -> showErrorSnackbar(
                     getString(R.string.error_onconnection_camera)
                 )
-                is MqttCameraReceiver.CameraError.LostConnection -> showErrorSnackbar(
+                is MqttErrorType.CameraError.LostConnection -> showErrorSnackbar(
                     getString(R.string.error_lostconnection_camera)
                 )
-                is MqttMlReceiver.MlError.OnConnect -> showErrorSnackbar(
+                is MqttErrorType.MlError.OnConnect -> showErrorSnackbar(
                     getString(R.string.error_onconnection_ml)
                 )
-                is MqttMlReceiver.MlError.LostConnection -> showErrorSnackbar(
+                is MqttErrorType.MlError.LostConnection -> showErrorSnackbar(
                     getString(R.string.error_lostconnection_error_ml)
                 )
             }
@@ -54,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showErrorSnackbar(message: String) {
-        val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_INDEFINITE)
+        val snackbar = Snackbar.make(binding.fragmentContainer, message, Snackbar.LENGTH_INDEFINITE)
         snackbar.setAction(getString(R.string.ok)) { snackbar.dismiss() }
         snackbar.show()
     }
