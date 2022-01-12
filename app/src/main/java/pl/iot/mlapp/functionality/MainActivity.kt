@@ -14,6 +14,7 @@ import pl.iot.mlapp.databinding.ActivityMainBinding
 import pl.iot.mlapp.di.appModule
 import pl.iot.mlapp.functionality.camera.CameraFragment
 import pl.iot.mlapp.functionality.notifications.NotificationsFragment
+import pl.iot.mlapp.functionality.settings.SettingsFragment
 import pl.iot.mlapp.mqtt.MqttCameraReceiver
 import pl.iot.mlapp.mqtt.MqttMlReceiver
 
@@ -71,6 +72,12 @@ class MainActivity : AppCompatActivity() {
                 R.id.pageNotifications -> {
                     supportFragmentManager.commit {
                         replace<NotificationsFragment>(R.id.fragmentContainer)
+                    }
+                    true
+                }
+                R.id.pageSettings -> {
+                    supportFragmentManager.commit {
+                        replace<SettingsFragment>(R.id.fragmentContainer)
                     }
                     true
                 }

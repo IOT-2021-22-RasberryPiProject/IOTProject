@@ -3,6 +3,7 @@
 
     <string name="nav_rail_camera">Kamera</string>
     <string name="nav_rail_notifications">Wejścia</string>
+    <string name="nav_rail_settings">Ustawienia</string>
 
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
@@ -21,6 +22,11 @@
     <string name="notification_foreground_channel_name">Powiadomienie o działaniu w tle</string>
     <string name="notification_alert_channel_name">Powiadomienie o nowych zdarzeniach</string>
     <string name="notification_title">Nowe zdarzenie</string>
+
+    <string name="settings_broker_ip_title">IP brokera</string>
+    <string name="settings_camera_topic_title">Temat MQTT dla obrazu z kamery</string>
+    <string name="settings_ml_topic_title">Temat MQTT dla decyzji algorytmu decyzjnego</string>
+    <string name="settings_save">Zapisz ustawienia</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

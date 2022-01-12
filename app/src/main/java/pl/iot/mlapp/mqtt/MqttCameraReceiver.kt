@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
+import pl.iot.mlapp.functionality.config.MqttConfig
 
 class MqttCameraReceiver(
     context: Context,
@@ -21,7 +22,7 @@ class MqttCameraReceiver(
 
     private val client = MqttAndroidClient(
         context,
-        config.getTcpCameraBroker(),
+        config.getTcpBroker(),
         config.clientId,
         MemoryPersistence(),
         MqttAndroidClient.Ack.AUTO_ACK

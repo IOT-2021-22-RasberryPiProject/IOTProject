@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
+import pl.iot.mlapp.functionality.config.MqttConfig
 
 class MqttMlReceiver(
     context: Context,
@@ -21,7 +22,7 @@ class MqttMlReceiver(
 
     private val client = MqttAndroidClient(
         context,
-        config.getTcpMlBroker(),
+        config.getTcpBroker(),
         config.clientId,
         MemoryPersistence(),
         MqttAndroidClient.Ack.AUTO_ACK
