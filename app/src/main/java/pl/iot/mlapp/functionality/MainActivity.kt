@@ -75,16 +75,16 @@ class MainActivity : AppCompatActivity() {
     private fun errorObserver(errorModel: MqttErrorType) {
         when (errorModel) {
             is MqttErrorType.CameraError.OnConnect -> showErrorSnackbar(
-                getString(R.string.error_onconnection_camera)
+                getString(R.string.error_onconnection)
             )
             is MqttErrorType.CameraError.LostConnection -> showErrorSnackbar(
-                getString(R.string.error_lostconnection_camera)
+                getString(R.string.error_lostconnection)
             )
             is MqttErrorType.MlError.OnConnect -> showErrorSnackbar(
-                getString(R.string.error_onconnection_ml)
+                getString(R.string.error_onconnection)
             )
             is MqttErrorType.MlError.LostConnection -> showErrorSnackbar(
-                getString(R.string.error_lostconnection_error_ml)
+                getString(R.string.error_lostconnection)
             )
         }
     }

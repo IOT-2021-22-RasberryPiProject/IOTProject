@@ -12,6 +12,9 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <string name="error_onconnection">Bład połączenia</string>
+    <string name="error_lostconnection">Utracono połączenie</string>
+
     <string name="error_onconnection_ml">Bład połączenia - ML</string>
     <string name="error_onconnection_camera">Bład połączenia - Kamera</string>
 

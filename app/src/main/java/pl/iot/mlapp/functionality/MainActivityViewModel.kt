@@ -6,12 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import pl.iot.mlapp.mqtt.receivers.MqttCameraReceiver
 import pl.iot.mlapp.mqtt.model.MqttErrorType
 import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
-import pl.iot.mlapp.mqtt.MqttStatusHandler
 import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
 
 class MainActivityViewModel(
@@ -40,7 +40,12 @@ class MainActivityViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             listOf(cameraReceiver.connectionErrorFlow, mlReceiver.connectionErrorFlow)
                 .merge()
+                .debounce(DEBOUNCE_TIMEOUT_MILLIS)
                 .collect { _errorLiveData.postValue(it) }
         }
+    }
+
+    companion object {
+        private const val DEBOUNCE_TIMEOUT_MILLIS = 1000L
     }
 }

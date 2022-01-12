@@ -16,6 +16,8 @@ class MqttNotificationService : LifecycleService() {
     private val mqttMessageReceiver: MqttMlReceiver by inject()
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
 
+    private var currentAlertNotificationId = 0
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         intent?.action?.let { handleIntentAction(it) }
@@ -95,7 +97,7 @@ class MqttNotificationService : LifecycleService() {
 
     private fun observeIncomingMessages(message: String) {
         Log.d(TAG, "service has received a message: $message")
-        notificationManager.notify(ALERT_NOTIFICATION_ID, createAlertNotification(message))
+        notificationManager.notify(currentAlertNotificationId++, createAlertNotification(message))
     }
 
     companion object {
@@ -105,8 +107,7 @@ class MqttNotificationService : LifecycleService() {
         private const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "FOREGROUND_NOTIFICATION_CHANNEL"
         private const val ALERT_NOTIFICATION_CHANNEL_ID = "ALERT_NOTIFICATION_CHANNEL"
 
-        private const val FOREGROUND_NOTIFICATION_ID = 1
-        private const val ALERT_NOTIFICATION_ID = 2
+        private const val FOREGROUND_NOTIFICATION_ID = -1
 
         private const val TAG = "FOREGROUND_SERVICE"
     }

@@ -1,7 +1,9 @@
 package pl.iot.mlapp.functionality.service
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 
@@ -9,10 +11,14 @@ class AppLifecycleObserver(
     private val context: Context
 ): DefaultLifecycleObserver {
 
+    private val notificationManager by lazy { context.getSystemService(NotificationManager::class.java) }
+
     // app goes to the foreground
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
         stopForegroundService()
+
+        notificationManager.cancelAll()
     }
 
     // App goes to the background

@@ -29,8 +29,8 @@ class MqttStatusHandler(
             .collect {
                 printLog(it)
                 cameraReceiver.reconnect()
-                delay(RETRY_TIME_MILLIS)
             }
+        delay(RETRY_TIME_MILLIS)
     }
 
     private suspend fun observeMlForError() {
@@ -38,8 +38,8 @@ class MqttStatusHandler(
             .collect {
                 printLog(it)
                 mlReceiver.reconnect()
-                delay(RETRY_TIME_MILLIS)
             }
+        delay(RETRY_TIME_MILLIS)
     }
 
     private suspend fun observeCameraForMessage() {
