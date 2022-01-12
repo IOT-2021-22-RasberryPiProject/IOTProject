@@ -39,6 +39,7 @@ class MqttMlReceiver(
 
     fun reconnect() {
         config = configRepository.getConfig()
+        client.disconnect()
         client.unregisterResources()
         client = initClient()
         connect()

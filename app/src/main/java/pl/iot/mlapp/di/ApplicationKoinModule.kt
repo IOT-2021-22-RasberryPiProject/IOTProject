@@ -54,7 +54,9 @@ val appModule = module {
 
     viewModel {
         SettingsViewModel(
-            configRepository = get()
+            configRepository = get(),
+            cameraReceiver = get(),
+            mlReceiver = get()
         )
     }
 }
