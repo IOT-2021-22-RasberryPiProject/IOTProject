@@ -17,6 +17,7 @@ import pl.iot.mlapp.functionality.settings.SettingsFragment
 import pl.iot.mlapp.mqtt.model.MqttErrorType
 import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
 import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
+import java.time.Duration
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,21 +35,41 @@ class MainActivity : AppCompatActivity() {
         setupObservers()
     }
 
+    fun showSnackbar(
+        message: String,
+        duration: Int = Snackbar.LENGTH_SHORT,
+        actionTextColor: Int? = null,
+        backgroundColor: Int? = null
+    ) = with(binding) {
+        val snackbar = Snackbar.make(bottomNavigation, message, duration)
+        snackbar.anchorView = bottomNavigation
+        snackbar.setAction(getString(R.string.ok)) { snackbar.dismiss() }
+        actionTextColor?.let { snackbar.setActionTextColor(it) }
+        backgroundColor?.let { snackbar.setBackgroundTint(it) }
+        snackbar.show()
+    }
+
+    private fun showErrorSnackbar(message: String) = showSnackbar(
+        message,
+        duration = Snackbar.LENGTH_INDEFINITE
+    )
+
     private fun setupObservers() {
         viewModel.mlMessage.observe(this, ::mlMessageObserver)
         viewModel.errorLiveData.observe(this, ::errorObserver)
     }
 
     private fun mlMessageObserver(mlMessage: MqttMlResponseModel) {
-        val textColor = when(mlMessage.statusCode) {
+        val backgroundColor = when(mlMessage.statusCode) {
             0 -> Color.RED
-            1 -> Color.GREEN
+            1 -> getColor(R.color.dark_green)
             else -> null
         }
 
         binding.bottomNavigation.showSnackbar(
             message = mlMessage.message,
-            textColor = textColor
+            backgroundColor = backgroundColor,
+            actionTextColor = Color.WHITE
         )
     }
 
@@ -68,12 +89,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
-
-
-    private fun showErrorSnackbar(message: String) = binding.fragmentContainer.showSnackbar(
-        message,
-        duration = Snackbar.LENGTH_INDEFINITE
-    )
 
     private fun setupViews() {
         setSupportActionBar(binding.toolbar)

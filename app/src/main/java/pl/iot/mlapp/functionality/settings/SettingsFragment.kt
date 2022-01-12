@@ -10,6 +10,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.iot.mlapp.R
 import pl.iot.mlapp.databinding.FragmentSettingsBinding
 import pl.iot.mlapp.extensions.showSnackbar
+import pl.iot.mlapp.functionality.MainActivity
 import pl.iot.mlapp.functionality.config.MqttConfig
 
 class SettingsFragment : Fragment() {
@@ -52,10 +53,7 @@ class SettingsFragment : Fragment() {
             )
         )
 
-        root.showSnackbar(
-            message = getString(R.string.setting_save_success),
-            duration = Snackbar.LENGTH_SHORT
-        )
+        (activity as? MainActivity)?.showSnackbar(getString(R.string.setting_save_success))
     }
 
     private fun setupObservers() {

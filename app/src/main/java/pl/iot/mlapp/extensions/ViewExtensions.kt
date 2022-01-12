@@ -6,12 +6,14 @@ import pl.iot.mlapp.R
 
 fun View.showSnackbar(
     message: String,
-    duration: Int = Snackbar.LENGTH_LONG,
-    textColor: Int? = null
+    duration: Int = Snackbar.LENGTH_SHORT,
+    actionTextColor: Int? = null,
+    backgroundColor: Int? = null
 ) {
-    Snackbar.make(this, message, duration).apply {
-        setAction(this.context.getString(R.string.ok)) { dismiss() }
-        textColor?.let { setTextColor(it) }
-        show()
-    }
+    val snackbar = Snackbar.make(this, message, duration)
+    snackbar.setAction(this.context.getString(R.string.ok)) { snackbar.dismiss() }
+    snackbar.anchorView = this
+    actionTextColor?.let { snackbar.setActionTextColor(it) }
+    backgroundColor?.let { snackbar.setBackgroundTint(it) }
+    snackbar.show()
 }
