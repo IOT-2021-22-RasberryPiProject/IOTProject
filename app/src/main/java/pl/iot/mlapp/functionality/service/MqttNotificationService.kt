@@ -2,7 +2,6 @@ package pl.iot.mlapp.functionality.service
 
 import android.app.*
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +14,7 @@ import pl.iot.mlapp.mqtt.MqttMlReceiver
 
 class MqttNotificationService : LifecycleService() {
     private val mqttMessageReceiver: MqttMlReceiver by inject()
+    private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
@@ -30,7 +30,7 @@ class MqttNotificationService : LifecycleService() {
     }
 
     private fun startForegroundService() {
-        startForeground(IOT_NOTIFICATION_ID, createNotification())
+        startForeground(FOREGROUND_NOTIFICATION_ID, createForegroundNotification())
         createMqqtMessagesObserver()
     }
 
@@ -39,7 +39,31 @@ class MqttNotificationService : LifecycleService() {
         stopSelf()
     }
 
-    private fun createNotification(): Notification {
+    private fun createNotificationChannel(
+        channelId: String,
+        channelTitle: String,
+        notificationImportance: Int = NotificationManager.IMPORTANCE_NONE
+    ) {
+        val notificationChannel =  NotificationChannel(
+            channelId,
+            channelTitle,
+            notificationImportance
+        )
+
+        notificationManager.createNotificationChannel(notificationChannel)
+    }
+
+    private fun createForegroundNotification(): Notification {
+        createNotificationChannel(
+            channelId = FOREGROUND_NOTIFICATION_CHANNEL_ID,
+            channelTitle = getString(R.string.notification_foreground_channel_name),
+            notificationImportance = NotificationManager.IMPORTANCE_NONE
+        )
+
+        return Notification.Builder(this, FOREGROUND_NOTIFICATION_CHANNEL_ID).build()
+    }
+
+    private fun createAlertNotification(message: String): Notification {
         val pendingIntent: PendingIntent = PendingIntent.getActivity(
             this,
             0,
@@ -47,38 +71,40 @@ class MqttNotificationService : LifecycleService() {
             0 or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notificationChannel = NotificationChannel(
-            IOT_NOTIFICATION_CHANNEL_ID,
-            getString(R.string.notification_channel_name),
-            NotificationManager.IMPORTANCE_DEFAULT
+        createNotificationChannel(
+            channelId = ALERT_NOTIFICATION_CHANNEL_ID,
+            channelTitle = getString(R.string.notification_alert_channel_name),
+            notificationImportance = NotificationManager.IMPORTANCE_MAX
         )
 
-        val notificationManager = getSystemService(NotificationManager::class.java)
-        notificationManager.createNotificationChannel(notificationChannel)
-
-        return Notification.Builder(this, IOT_NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("IOT")
-            .setContentText("Aplikacja dziala w tle")
+        return Notification.Builder(this, ALERT_NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_camera)
+            .setContentTitle(getString(R.string.notification_title))
+            .setContentText(message)
             .setContentIntent(pendingIntent)
             .build()
     }
 
     private fun createMqqtMessagesObserver() {
-        lifecycleScope.launch {
-            mqttMessageReceiver.messageFlow.collect { messagesObserver(it) }
+        lifecycleScope.launch(Dispatchers.IO) {
+            mqttMessageReceiver.messageFlow.collect { observeIncomingMessages(it) }
         }
     }
 
-    private fun messagesObserver(message: String) {
+    private fun observeIncomingMessages(message: String) {
         Log.d(TAG, "service has received a message: $message")
+        notificationManager.notify(ALERT_NOTIFICATION_ID, createAlertNotification(message))
     }
 
     companion object {
         const val ACTION_START_FOREGROUND_SERVICE = "ACTION_START_FOREGROUND_SERVICE"
         const val ACTION_STOP_FOREGROUND_SERVICE = "ACTION_STOP_FOREGROUND_SERVICE"
 
-        private const val IOT_NOTIFICATION_CHANNEL_ID = "IOT_NOTIFICATION_CHANNEL"
-        private const val IOT_NOTIFICATION_ID = 1
+        private const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "FOREGROUND_NOTIFICATION_CHANNEL"
+        private const val ALERT_NOTIFICATION_CHANNEL_ID = "ALERT_NOTIFICATION_CHANNEL"
+
+        private const val FOREGROUND_NOTIFICATION_ID = 1
+        private const val ALERT_NOTIFICATION_ID = 2
 
         private const val TAG = "FOREGROUND_SERVICE"
     }
