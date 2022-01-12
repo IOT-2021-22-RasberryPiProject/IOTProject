@@ -17,6 +17,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/broker_ip_edit_text"
+            android:text=" "
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -36,6 +37,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/camera_topic_edit_text"
+            android:text=" "
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -55,6 +57,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/ml_topic_edit_text"
+            android:text=" "
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

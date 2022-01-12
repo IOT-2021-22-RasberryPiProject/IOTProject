@@ -26,6 +26,18 @@ class MqttCameraReceiver(
     private var config: MqttConfig = configRepository.getConfig()
     private var client: MqttAndroidClient = initClient()
 
+    init {
+        connect()
+    }
+
+    fun reconnect() {
+        client.unsubscribe(config.cameraTopic)
+        config = configRepository.getConfig()
+        client.unregisterResources()
+        client = initClient()
+        connect()
+    }
+
     private fun initClient() = MqttAndroidClient(
         context,
         config.getTcpBroker(),
@@ -33,17 +45,6 @@ class MqttCameraReceiver(
         MemoryPersistence(),
         MqttAndroidClient.Ack.AUTO_ACK
     )
-
-    init {
-        connect()
-    }
-
-    fun reconnect() {
-        config = configRepository.getConfig()
-        client.unregisterResources()
-        client = initClient()
-        connect()
-    }
 
     private fun connect() {
         val connOptions = MqttConnectOptions().apply {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Monitoring</string>
 
     <string name="nav_rail_camera">Kamera</string>
     <string name="nav_rail_notifications">Wejścia</string>
@@ -27,6 +27,7 @@
     <string name="settings_camera_topic_title">Temat MQTT dla obrazu z kamery</string>
     <string name="settings_ml_topic_title">Temat MQTT dla decyzji algorytmu decyzjnego</string>
     <string name="settings_save">Zapisz ustawienia</string>
+    <string name="setting_save_success">Pomyślnie zapisano ustawienia</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

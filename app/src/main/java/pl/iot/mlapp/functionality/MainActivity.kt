@@ -2,10 +2,8 @@ package pl.iot.mlapp.functionality
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
-import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.iot.mlapp.R
 import pl.iot.mlapp.databinding.ActivityMainBinding
@@ -49,11 +47,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showErrorSnackbar(message: String) {
-        val snackbar = Snackbar.make(binding.fragmentContainer, message, Snackbar.LENGTH_INDEFINITE)
-        snackbar.setAction(getString(R.string.ok)) { snackbar.dismiss() }
-        snackbar.show()
-    }
+    private fun showErrorSnackbar(message: String) = binding.fragmentContainer.showSnackbar(message)
 
     private fun setupViews() {
         setSupportActionBar(binding.toolbar)

@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import pl.iot.mlapp.R
 import pl.iot.mlapp.databinding.FragmentSettingsBinding
 import pl.iot.mlapp.functionality.config.MqttConfig
+import pl.iot.mlapp.functionality.showSnackbar
 
 class SettingsFragment : Fragment() {
 
@@ -48,6 +50,8 @@ class SettingsFragment : Fragment() {
                 mlTopic = mlTopicEditText.text.toString()
             )
         )
+
+        binding.root.showSnackbar(getString(R.string.setting_save_success))
     }
 
     private fun setupObservers() {

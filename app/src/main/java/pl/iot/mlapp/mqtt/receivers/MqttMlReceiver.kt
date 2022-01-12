@@ -25,6 +25,18 @@ class MqttMlReceiver(
     private var config: MqttConfig = configRepository.getConfig()
     private var client: MqttAndroidClient = initClient()
 
+    init {
+        connect()
+    }
+
+    fun reconnect() {
+        client.unsubscribe(config.mlTopic)
+        config = configRepository.getConfig()
+        client.unregisterResources()
+        client = initClient()
+        connect()
+    }
+
     private fun initClient() = MqttAndroidClient(
         context,
         config.getTcpBroker(),
@@ -32,18 +44,6 @@ class MqttMlReceiver(
         MemoryPersistence(),
         MqttAndroidClient.Ack.AUTO_ACK
     )
-
-    init {
-        connect()
-    }
-
-    fun reconnect() {
-        config = configRepository.getConfig()
-        client.disconnect()
-        client.unregisterResources()
-        client = initClient()
-        connect()
-    }
 
     private fun connect() {
         val connOptions = MqttConnectOptions()
