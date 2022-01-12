@@ -6,11 +6,13 @@ import pl.iot.mlapp.functionality.sharedpreferences.SharedPreferencesHelper
 class ConfigRepository(context: Context) : IConfigRepository {
     private val sharedPreferencesHelper = SharedPreferencesHelper(context)
 
-    override fun getConfig() = MqttConfig (
-        brokerIp = sharedPreferencesHelper.getStringValue(BROKER_IP_KEY, BROKER_IP_DEFAULT_VALUE),
-        cameraTopic = sharedPreferencesHelper.getStringValue(CAMERA_TOPIC_KEY, CAMERA_TOPIC_DEFAULT_VALUE),
-        mlTopic = sharedPreferencesHelper.getStringValue(ML_TOPIC_KEY, ML_TOPIC_DEFAULT_VALUE)
-    )
+    override fun getConfig(): MqttConfig = with(sharedPreferencesHelper) {
+        return MqttConfig(
+            brokerIp = getStringValue(BROKER_IP_KEY, BROKER_IP_DEFAULT_VALUE),
+            cameraTopic = getStringValue(CAMERA_TOPIC_KEY, CAMERA_TOPIC_DEFAULT_VALUE),
+            mlTopic = getStringValue(ML_TOPIC_KEY, ML_TOPIC_DEFAULT_VALUE)
+        )
+    }
 
     override fun saveConfig(config: MqttConfig) = with(sharedPreferencesHelper) {
         saveStringValue(BROKER_IP_KEY, config.brokerIp)
