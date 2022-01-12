@@ -1,5 +1,6 @@
 package pl.iot.mlapp.functionality
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
@@ -14,6 +15,7 @@ import pl.iot.mlapp.functionality.camera.CameraFragment
 import pl.iot.mlapp.functionality.notifications.NotificationsFragment
 import pl.iot.mlapp.functionality.settings.SettingsFragment
 import pl.iot.mlapp.mqtt.model.MqttErrorType
+import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
 import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
 
 class MainActivity : AppCompatActivity() {
@@ -29,28 +31,43 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setupViews()
 
-        observeForErrors()
+        setupObservers()
     }
 
-    private fun observeForErrors() {
-        viewModel.errorLiveData.observe(this) { error ->
-            when (error) {
-                is MqttErrorType.CameraError.OnConnect -> showErrorSnackbar(
-                    getString(R.string.error_onconnection_camera)
-                )
-                is MqttErrorType.CameraError.LostConnection -> showErrorSnackbar(
-                    getString(R.string.error_lostconnection_camera)
-                )
-                is MqttErrorType.MlError.OnConnect -> showErrorSnackbar(
-                    getString(R.string.error_onconnection_ml)
-                )
-                is MqttErrorType.MlError.LostConnection -> showErrorSnackbar(
-                    getString(R.string.error_lostconnection_error_ml)
-                )
-            }
+    private fun setupObservers() {
+        viewModel.mlMessage.observe(this, ::mlMessageObserver)
+        viewModel.errorLiveData.observe(this, ::errorObserver)
+    }
+
+    private fun mlMessageObserver(mlMessage: MqttMlResponseModel) {
+        val textColor = when(mlMessage.statusCode) {
+            0 -> Color.RED
+            1 -> Color.GREEN
+            else -> null
+        }
+
+        binding.bottomNavigation.showSnackbar(
+            message = mlMessage.message,
+            textColor = textColor
+        )
+    }
+
+    private fun errorObserver(errorModel: MqttErrorType) {
+        when (errorModel) {
+            is MqttErrorType.CameraError.OnConnect -> showErrorSnackbar(
+                getString(R.string.error_onconnection_camera)
+            )
+            is MqttErrorType.CameraError.LostConnection -> showErrorSnackbar(
+                getString(R.string.error_lostconnection_camera)
+            )
+            is MqttErrorType.MlError.OnConnect -> showErrorSnackbar(
+                getString(R.string.error_onconnection_ml)
+            )
+            is MqttErrorType.MlError.LostConnection -> showErrorSnackbar(
+                getString(R.string.error_lostconnection_error_ml)
+            )
         }
     }
-
 
 
     private fun showErrorSnackbar(message: String) = binding.fragmentContainer.showSnackbar(

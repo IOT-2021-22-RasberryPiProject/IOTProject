@@ -12,6 +12,7 @@ import pl.iot.mlapp.mqtt.receivers.MqttCameraReceiver
 import pl.iot.mlapp.mqtt.model.MqttErrorType
 import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
 import pl.iot.mlapp.mqtt.MqttStatusHandler
+import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
 
 class MainActivityViewModel(
     private val cameraReceiver: MqttCameraReceiver,
@@ -21,13 +22,19 @@ class MainActivityViewModel(
 
     init {
         mqttObserveForErrors()
+        observeForMlMessages()
     }
 
     private val _errorLiveData = MutableLiveData<MqttErrorType>()
     val errorLiveData: LiveData<MqttErrorType> = _errorLiveData
 
-    private fun observeForMlMessages() {
+    private val _mlMessage = MutableLiveData<MqttMlResponseModel>()
+    val mlMessage: LiveData<MqttMlResponseModel> = _mlMessage
 
+    private fun observeForMlMessages() {
+        viewModelScope.launch(Dispatchers.IO) {
+            mlReceiver.messageFlow.collect { _mlMessage.postValue(it) }
+        }
     }
 
     private fun mqttObserveForErrors() {
