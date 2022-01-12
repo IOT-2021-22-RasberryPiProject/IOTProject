@@ -31,9 +31,21 @@ class MqttMlReceiver(
     private val TAG = "MqttML"
 
     init {
-        val connOptions = MqttConnectOptions()
-        connOptions.isAutomaticReconnect = true
-        connOptions.isCleanSession = true
+        connect()
+    }
+
+    fun reconnect() {
+        disconnect()
+        connect()
+    }
+
+    private fun disconnect() = client.disconnect()
+
+    private fun connect() {
+        val connOptions = MqttConnectOptions().apply {
+            isAutomaticReconnect = true
+            isCleanSession = true
+        }
 
         client.connect(connOptions, object : IMqttActionListener {
             override fun onSuccess(asyncActionToken: IMqttToken?) {
