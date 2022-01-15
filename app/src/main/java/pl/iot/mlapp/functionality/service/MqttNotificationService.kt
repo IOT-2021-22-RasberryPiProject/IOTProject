@@ -10,10 +10,13 @@ import kotlinx.coroutines.flow.collect
 import org.koin.android.ext.android.inject
 import pl.iot.mlapp.R
 import pl.iot.mlapp.functionality.MainActivity
+import pl.iot.mlapp.functionality.notifications.domain.repository.NotificationsRepository
+import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
 import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
 
 class MqttNotificationService : LifecycleService() {
     private val mqttMessageReceiver: MqttMlReceiver by inject()
+    private val repository: NotificationsRepository by inject()
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
 
     private var currentAlertNotificationId = 0
@@ -90,14 +93,15 @@ class MqttNotificationService : LifecycleService() {
     private fun createMqqtMessagesObserver() {
         lifecycleScope.launch(Dispatchers.IO) {
             mqttMessageReceiver.messageFlow.collect { responseModel ->
-                responseModel?.let { observeIncomingMessages(it.message) }
+                responseModel?.let { observeIncomingMessages(it) }
             }
         }
     }
 
-    private fun observeIncomingMessages(message: String) {
-        Log.d(TAG, "service has received a message: $message")
-        notificationManager.notify(currentAlertNotificationId++, createAlertNotification(message))
+    private suspend fun observeIncomingMessages(mqttMlResponseModel: MqttMlResponseModel) {
+        Log.d(TAG, "service has received a message: ${mqttMlResponseModel.message}")
+        repository.insertNotification(mqttMlResponseModel)
+        notificationManager.notify(currentAlertNotificationId++, createAlertNotification(mqttMlResponseModel.message))
     }
 
     companion object {

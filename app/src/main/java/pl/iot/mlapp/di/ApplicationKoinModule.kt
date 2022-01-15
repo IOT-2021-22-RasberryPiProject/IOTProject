@@ -32,8 +32,10 @@ val appModule = module {
     single {
         Room.databaseBuilder(
             androidApplication(),
-            NotificationsDatabase::class.java, "notifications-db"
+            NotificationsDatabase::class.java,
+            "notifications-db"
         )
+            .fallbackToDestructiveMigration()
             .build()
     }
 
@@ -42,19 +44,19 @@ val appModule = module {
         NotificationsDataChangedProvider::class
     )
 
-    viewModel {
-        NotificationsViewModel(
-            notificationsRepository = get(),
-            notificationUiMapper = NotificationUiMapper(),
-            dataChangedProvider = get()
-        )
-    }
-
     single {
         NotificationsRepository(
             notificationsDao = get<NotificationsDatabase>().notificationsDao(),
             notificationMapper = NotificationMapper(),
             notificationsDataChangedNotifier = get()
+        )
+    }
+
+    viewModel {
+        NotificationsViewModel(
+            notificationsRepository = get(),
+            notificationUiMapper = NotificationUiMapper(),
+            dataChangedProvider = get()
         )
     }
 

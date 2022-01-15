@@ -36,9 +36,6 @@ class MainActivityViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             mlReceiver.messageFlow.collect { mqttMessageModel ->
                 _mlMessage.postValue(mqttMessageModel)
-                mqttMessageModel?.let { mqttMessageModelSafe ->
-                    notificationsRepository.insertNotification(mqttMessageModelSafe)
-                } ?: throw IllegalArgumentException()
             }
         }
     }
