@@ -10,7 +10,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.iot.mlapp.R
 import pl.iot.mlapp.databinding.ActivityMainBinding
 import pl.iot.mlapp.functionality.camera.CameraFragment
-import pl.iot.mlapp.functionality.notifications.NotificationsFragment
+import pl.iot.mlapp.functionality.notifications.presentation.NotificationsFragment
 import pl.iot.mlapp.functionality.settings.SettingsFragment
 import pl.iot.mlapp.mqtt.model.MqttErrorType
 import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun mlMessageObserver(mlMessage: MqttMlResponseModel) {
-        val backgroundColor = when(mlMessage.statusCode) {
+        val backgroundColor = when (mlMessage.statusCode) {
             0 -> Color.RED
             1 -> getColor(R.color.dark_green)
             else -> null

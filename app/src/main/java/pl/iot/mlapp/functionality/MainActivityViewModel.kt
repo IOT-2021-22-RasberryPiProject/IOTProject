@@ -9,14 +9,16 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
-import pl.iot.mlapp.mqtt.receivers.MqttCameraReceiver
+import pl.iot.mlapp.functionality.notifications.domain.repository.NotificationsRepository
 import pl.iot.mlapp.mqtt.model.MqttErrorType
-import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
 import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
+import pl.iot.mlapp.mqtt.receivers.MqttCameraReceiver
+import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
 
 class MainActivityViewModel(
     private val cameraReceiver: MqttCameraReceiver,
     private val mlReceiver: MqttMlReceiver,
+    private val notificationsRepository: NotificationsRepository
 ) : ViewModel() {
 
     init {
@@ -32,7 +34,12 @@ class MainActivityViewModel(
 
     private fun observeForMlMessages() {
         viewModelScope.launch(Dispatchers.IO) {
-            mlReceiver.messageFlow.collect { _mlMessage.postValue(it) }
+            mlReceiver.messageFlow.collect { mqttMessageModel ->
+                _mlMessage.postValue(mqttMessageModel)
+                mqttMessageModel?.let { mqttMessageModelSafe ->
+                    notificationsRepository.insertNotification(mqttMessageModelSafe)
+                } ?: throw IllegalArgumentException()
+            }
         }
     }
 
