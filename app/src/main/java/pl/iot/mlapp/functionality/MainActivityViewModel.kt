@@ -14,6 +14,7 @@ import pl.iot.mlapp.mqtt.model.MqttErrorType
 import pl.iot.mlapp.mqtt.model.MqttMlResponseModel
 import pl.iot.mlapp.mqtt.receivers.MqttCameraReceiver
 import pl.iot.mlapp.mqtt.receivers.MqttMlReceiver
+import java.lang.IllegalArgumentException
 
 class MainActivityViewModel(
     private val cameraReceiver: MqttCameraReceiver,
@@ -36,6 +37,9 @@ class MainActivityViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             mlReceiver.messageFlow.collect { mqttMessageModel ->
                 _mlMessage.postValue(mqttMessageModel)
+                notificationsRepository.insertNotification(
+                    mqttMessageModel ?: throw IllegalArgumentException()
+                )
             }
         }
     }
