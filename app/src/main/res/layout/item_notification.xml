@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:padding="@dimen/half_margin">
 
     <ImageView
@@ -26,5 +26,13 @@
         app:layout_constraintStart_toEndOf="@+id/notificationIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Kacper wszedl do mieszkania" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/small_margin"
+        app:layout_constraintTop_toBottomOf="@+id/notificationIcon"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

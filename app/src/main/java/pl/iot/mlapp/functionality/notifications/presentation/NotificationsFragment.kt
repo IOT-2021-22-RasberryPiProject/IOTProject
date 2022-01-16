@@ -17,7 +17,7 @@ class NotificationsFragment : Fragment() {
 
     private val binding get() = _binding!!
     private val viewModel: NotificationsViewModel by viewModel()
-    private val adapter = NotificationsAdapter()
+    private lateinit var adapter: NotificationsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +51,7 @@ class NotificationsFragment : Fragment() {
     }
 
     private fun setupView() = with(binding) {
+        adapter =  NotificationsAdapter()
         notificationsList.adapter = adapter
     }
 

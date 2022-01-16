@@ -24,7 +24,7 @@ class NotificationsAdapter
 
     override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
         with(holder.binding) {
-            val item = currentList[position]
+            val item = getItem(position)
 
             ImageViewCompat.setImageTintList(
                 notificationIcon, ColorStateList.valueOf(
@@ -34,8 +34,6 @@ class NotificationsAdapter
             notificationText.text = item.message
         }
     }
-
-    override fun getItemCount(): Int = currentList.size
 
     class NotificationViewHolder(
         val binding: ItemNotificationBinding

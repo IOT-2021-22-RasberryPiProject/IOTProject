@@ -36,8 +36,8 @@ class NotificationsViewModel(
         notificationUiMapper.map(notifications)
     }
 
-    fun fetchData() {
-
+    fun fetchData() = viewModelScope.launch {
+        _notifications.value = notificationsRepository.getNotifications()
     }
 
     fun startCollectingNotifierData() {
